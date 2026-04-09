@@ -144,4 +144,64 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initialize app
   fetchActivities();
+
+  // Test Runner functionality
+  const runTestsBtn = document.getElementById("run-tests-btn");
+  const testResults = document.getElementById("test-results");
+  const testStatus = document.getElementById("test-status");
+  const testOutput = document.getElementById("test-output");
+
+  runTestsBtn.addEventListener("click", async () => {
+    // Disable button and show loading state
+    runTestsBtn.disabled = true;
+    runTestsBtn.textContent = "Running Tests...";
+
+    testResults.classList.add("hidden");
+
+    try {
+      const response = await fetch("/run-tests", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const result = await response.json();
+
+      // Show results
+      testResults.classList.remove("hidden");
+
+      if (result.success) {
+        testStatus.textContent = "✅ All tests passed!";
+        testStatus.className = "success";
+      } else {
+        testStatus.textContent = "❌ Some tests failed";
+        testStatus.className = "failure";
+      }
+
+      // Display test output
+      let output = result.stdout;
+      if (result.stderr) {
+        output += "\n\nSTDERR:\n" + result.stderr;
+      }
+
+      // Add summary if available
+      if (result.summary) {
+        testStatus.textContent += ` (${result.summary})`;
+      }
+
+      testOutput.textContent = output;
+
+    } catch (error) {
+      testResults.classList.remove("hidden");
+      testStatus.textContent = "❌ Failed to run tests";
+      testStatus.className = "failure";
+      testOutput.textContent = `Error: ${error.message}`;
+      console.error("Error running tests:", error);
+    } finally {
+      // Re-enable button
+      runTestsBtn.disabled = false;
+      runTestsBtn.textContent = "Run Tests";
+    }
+  });
 });

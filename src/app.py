@@ -10,6 +10,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
 import os
 from pathlib import Path
+import subprocess
+import json
 
 app = FastAPI(title="Mergington High School API",
               description="API for viewing and signing up for extracurricular activities")
@@ -119,3 +121,43 @@ def remove_participant(activity_name: str, email: str):
 
     activity["participants"].remove(email)
     return {"message": f"Removed {email} from {activity_name}"}
+
+
+@app.post("/run-tests")
+def run_tests():
+    """Run the test suite and return results"""
+    try:
+        # Get the absolute path to the project root
+        project_root = Path(__file__).parent.parent
+
+        # Run pytest and capture output
+        result = subprocess.run(
+            ["python", "-m", "pytest", "tests/", "-v", "--tb=short"],
+            capture_output=True,
+            text=True,
+            cwd=project_root
+        )
+
+        # Parse the output to determine success
+        test_results = {
+            "returncode": result.returncode,
+            "stdout": result.stdout,
+            "stderr": result.stderr,
+            "success": result.returncode == 0
+        }
+
+        # Try to extract summary from stdout
+        lines = result.stdout.split('\n')
+        summary_line = None
+        for line in reversed(lines):
+            if 'passed' in line and 'failed' in line:
+                summary_line = line.strip()
+                break
+
+        if summary_line:
+            test_results["summary"] = summary_line
+
+        return test_results
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to run tests: {str(e)}")

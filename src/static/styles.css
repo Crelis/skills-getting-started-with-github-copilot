@@ -199,6 +199,64 @@ button:hover {
   display: none;
 }
 
+/* Test Runner Styles */
+#test-runner-container {
+  background-color: #f8f9fa;
+  border: 2px solid #6c757d;
+}
+
+#test-runner-container h3 {
+  color: #495057;
+}
+
+#run-tests-btn {
+  background-color: #28a745;
+  margin-bottom: 15px;
+}
+
+#run-tests-btn:hover {
+  background-color: #218838;
+}
+
+#run-tests-btn:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+#test-results {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: white;
+  border-radius: 5px;
+  border: 1px solid #dee2e6;
+}
+
+#test-status {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+#test-status.success {
+  color: #28a745;
+}
+
+#test-status.failure {
+  color: #dc3545;
+}
+
+#test-output {
+  background-color: #f8f9fa;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #dee2e6;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
 footer {
   text-align: center;
   margin-top: 30px;
